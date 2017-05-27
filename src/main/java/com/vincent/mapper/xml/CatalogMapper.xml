@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vincent.dao.CatalogDao" >
+  <insert id="insert" parameterType="java.util.List">
+    insert into catalog 
+    values
+       <foreach collection="list" item="catalog" index="index" separator=",">
+            (	#{catalog.id,jdbcType=BIGINT},#{catalog.fid,jdbcType=BIGINT},#{catalog.name,jdbcType=VARCHAR},#{catalog.library,jdbcType=VARCHAR},
+            	#{catalog.ico,jdbcType=VARCHAR},#{catalog.lev,jdbcType=TINYINT},
+    		 #{catalog.order,jdbcType=BIGINT},#{catalog.hide,jdbcType=TINYINT}
+    		)
+        </foreach> 
+   
+  </insert>
+  
+  
+  <select id="selectByFid" parameterType="Catalog" resultType="Catalog" >
+	  	select * from catalog where
+	    <if test="id==null">
+	     	 fid=0
+	    </if>
+	    <if test="id!=null">
+	    	 fid=#{id,jdbcType=BIGINT}
+	    </if>
+  </select>
+  
+  <update id="updateCatalog" parameterType="Catalog">
+   update catalog set name =#{name,jdbcType=VARCHAR} where id=#{id,jdbcType=BIGINT}
+  </update>
+  
+  <insert id="addCatalog" parameterType="Catalog"  useGeneratedKeys="true" keyProperty="id" >
+  
+  insert into catalog(fid,name,lev,state)(
+   	select  #{fid,jdbcType=BIGINT},#{name,jdbcType=VARCHAR},lev+1 lev,#{state,jdbcType=TINYINT}
+   from catalog where  id =#{fid,jdbcType=BIGINT}
+  )
+  
+  </insert>
+  
+  <delete id="removeCatalog" parameterType="Catalog">
+    
+    delete from catalog where id=#{id,jdbcType=TINYINT} or fid = #{id,jdbcType=TINYINT}
+    
+  </delete>
+  
+</mapper>
